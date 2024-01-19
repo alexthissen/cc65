@@ -24,25 +24,10 @@
 /*                                                                           */
 /*****************************************************************************/
 
-
 #ifndef __SUZY_H
 #define __SUZY_H
 
-/* Joypad $FCB0 */
-#define JOYPAD_RIGHT    0x10
-#define JOYPAD_LEFT     0x20
-#define JOYPAD_DOWN     0x40
-#define JOYPAD_UP       0x80
-#define BUTTON_OPTION1  0x08
-#define BUTTON_OPTION2  0x04
-#define BUTTON_INNER    0x02
-#define BUTTON_OUTER    0x01
-
-/* Switches $FCB1 */
-#define BUTTON_PAUSE    0x01
-
-
-/* Hardware Math */
+// Math hardware
 #define FACTOR_A *(unsigned int *) 0xFC54
 #define FACTOR_B *(unsigned int *) 0xFC52
 #define PRODUCT0 *(unsigned int *) 0xFC60
@@ -60,10 +45,10 @@
 #define REMAINDER1 *(unsigned int *) 0xFC6E
 #define REMAINDER *(long *) 0xFC6C
 
+// Sprite control block (SCB) defines
 
-/* Sprite control block (SCB) defines */
-
-/* SPRCTL0 $FC80 */
+// SPRCTL0 bit definitions
+#define BITS_MASK        0xC0
 #define BPP_4            0xC0
 #define BPP_3            0x80
 #define BPP_2            0x40
@@ -79,10 +64,11 @@
 #define TYPE_BACKNONCOLL 0x01
 #define TYPE_BACKGROUND  0x00
 
-/* SPRCTL1 $FC81 */
+// SPRCTL1 bit definitions
 #define LITERAL          0x80
 #define PACKED           0x00
-#define ALGO3            0x40
+#define ALGO_3           0x40  // Do not use algo 3 shifter (buggy) 
+#define RELOAD_MASK      0x30
 #define RENONE           0x00
 #define REHV             0x10
 #define REHVS            0x20
@@ -212,38 +198,47 @@ typedef struct PENPAL_1 {
 
 /* Misc system defines */
 
-/* SPRGO $FC91 */
-#define EVER_ON         0x04
-#define SPRITE_GO       0x01
+// SPRGO bit definitions
+#define EVER_ON           0x04
+#define SPRITE_GO         0x01
 
-/* SPRSYS (write) $FC92 */
-#define SIGNMATH        0x80
-#define ACCUMULATE      0x40
-#define NO_COLLIDE      0x20
-#define VSTRETCH        0x10
-#define LEFTHAND        0x08
-#define CLR_UNSAFE      0x04
-#define SPRITESTOP      0x02
+// SPRSYS bit definitions for write operations
+#define SIGNMATH          0x80
+#define ACCUMULATE        0x40
+#define NO_COLLIDE        0x20 // Also SPRCOLL bit definition
+#define VSTRETCH          0x10
+#define LEFTHAND          0x08
+#define CLR_UNSAFE        0x04
+#define SPRITESTOP        0x02
 
-/* SPRSYS (read) $FC92 */
-#define MATHWORKING     0x80
-#define MATHWARNING     0x40
-#define MATHCARRY       0x20
-#define VSTRETCHING     0x10
-#define LEFTHANDED      0x08
-#define UNSAFE_ACCESS   0x04
-#define SPRITETOSTOP    0x02
-#define SPRITEWORKING   0x01
+// SPRSYS bit definitions for read operations
+#define MATHWORKING       0x80
+#define MATHWARNING       0x40
+#define MATHCARRY         0x20
+#define VSTRETCHING       0x10
+#define LEFTHANDED        0x08
+#define UNSAFEACCESS      0x04
+#define SPRITETOSTOP      0x02
+#define SPRITEWORKING     0x01
 
-/* MAPCTL $FFF9 */
-#define HIGHSPEED       0x80
-#define VECTORSPACE     0x08
-#define ROMSPACE        0x04
-#define MIKEYSPACE      0x02
-#define SUZYSPACE       0x01
+// JOYSTICK bit definitions
+#define JOYPAD_RIGHT      0x10
+#define JOYPAD_LEFT       0x20
+#define JOYPAD_DOWN       0x40
+#define JOYPAD_UP         0x80
+#define BUTTON_OPTION1    0x08
+#define BUTTON_OPTION2    0x04
+#define BUTTON_INNER      0x02
+#define BUTTON_OUTER      0x01
+#define BUTTON_A          BUTTON_OUTER
+#define BUTTON_B          BUTTON_INNER
 
+// SWITCHES bit definitions
+#define CART1_IO_INACTIVE 0x04
+#define CART0_IO_INACTIVE 0x02
+#define BUTTON_PAUSE      0x01
 
-/* Suzy Hardware Registers */
+// Structure for Suzy register offsets 
 struct __suzy {
   unsigned int  tmpadr;         // 0xFC00  Temporary address
   unsigned int  tiltacc;        // 0xFC02  Tilt accumulator
@@ -302,17 +297,16 @@ struct __suzy {
   unsigned char unused7[29];    // 0xFC93 - 0xFCAF  unused
   unsigned char joystick;       // 0xFCB0  joystick and buttons
   unsigned char switches;       // 0xFCB1  other switches
-  unsigned char cart0;          // 0xFCB2  cart0 r/w
-  unsigned char cart1;          // 0xFCB3  cart1 r/w
+  unsigned char rcart0;         // 0xFCB2  cart0 r/w
+  unsigned char rcart1;         // 0xFCB3  cart1 r/w
   unsigned char unused8[8];     // 0xFCB4 - 0xFCBF  unused
   unsigned char leds;           // 0xFCC0  leds
   unsigned char unused9;        // 0xFCC1  unused
-  unsigned char parstat;        // 0xFCC2  parallel port status
-  unsigned char pardata;        // 0xFCC3  parallel port data
-  unsigned char howie;          // 0xFCC4  howie (?)
+  unsigned char iostatus;       // 0xFCC2  parallel IO port status
+  unsigned char iodata;         // 0xFCC3  parallel IO port data
+  unsigned char howie;          // 0xFCC4  howie 
                                 // 0xFCC5 - 0xFCFF  unused
 };
-
 
 #endif
 
