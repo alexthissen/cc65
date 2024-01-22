@@ -77,12 +77,12 @@
 #define TGI_COLOR_WHITE         COLOR_WHITE
 
 // Masks for joy_read
-#define JOY_UP_MASK             0x80
-#define JOY_DOWN_MASK           0x40
-#define JOY_LEFT_MASK           0x20
-#define JOY_RIGHT_MASK          0x10
-#define JOY_BTN_1_MASK          0x01
-#define JOY_BTN_2_MASK          0x02
+#define JOY_UP_MASK             JOY_UP
+#define JOY_DOWN_MASK           JOY_DOWN
+#define JOY_LEFT_MASK           JOY_LEFT
+#define JOY_RIGHT_MASK          JOY_RIGHT
+#define JOY_BTN_1_MASK          A_BUTTON
+#define JOY_BTN_2_MASK          B_BUTTON
 
 #define JOY_BTN_A_MASK          JOY_BTN_1_MASK
 #define JOY_BTN_B_MASK          JOY_BTN_2_MASK
@@ -134,31 +134,11 @@ unsigned __fastcall__ lynx_eewrite (unsigned cell, unsigned val); // Write the w
 #define _MIKEY_TIMERS (*(struct _mikey_all_timers *) 0xFD00)  // mikey_timers[8]
 #define _HBL_TIMER (*(struct _mikey_timer *) 0xFD00)          // timer0 (HBL)
 #define _VBL_TIMER (*(struct _mikey_timer *) 0xFD08)          // timer2 (VBL)
-#define _UART_TIMER (*(struct _mikey_timer *) 0xFD14)         // timer4 (UART)
+#define _SERIAL_TIMER (*(struct _mikey_timer *) 0xFD14)       // timer4 (UART/SERIAL)
 #define _VIDDMA (*(unsigned int *) 0xFD92)                    // dispctl/viddma
 
 #include <_suzy.h>
-#define SUZY        (*(struct __suzy*)0xFC00)
-
-struct __cpu {
-  unsigned char mapctl;       // 0xFFF9 map control register
-  unsigned char *nmivector;   // 0xFFFA NMI vector
-  unsigned char *resetvector; // 0xFFFB Reset vector
-  unsigned char *irqvector;   // 0xFFFC IRQ vector
-};
-#define CPU (*(struct __cpu*) 0xFFF9)
-
-// MAPCTL flag definitions
-#define TURBO_DISABLE    0x80
-#define VECTOR_SPACE     0x08
-#define ROM_SPACE        0x04
-#define MIKEY_SPACE      0x02
-#define SUZY_SPACE       0x01
-
-// 65C02 hardware interrupt and reset vectors
-#define CPU_NMI *(unsigned int *) 0xFFFA
-#define CPU_RESET *(unsigned int *) 0xFFFC
-#define CPU_IRQ *(unsigned int *) 0xFFFE
+#define SUZY (*(struct __suzy*)0xFC00)
 
 /* End of lynx.h */
 #endif

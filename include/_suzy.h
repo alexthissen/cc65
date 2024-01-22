@@ -48,37 +48,37 @@
 // Sprite control block (SCB) defines
 
 // SPRCTL0 bit definitions
-#define BITS_MASK        0xC0
-#define BPP_4            0xC0
-#define BPP_3            0x80
-#define BPP_2            0x40
-#define BPP_1            0x00
-#define HFLIP            0x20
-#define VFLIP            0x10
-#define TYPE_SHADOW      0x07
-#define TYPE_XOR         0x06
-#define TYPE_NONCOLL     0x05
-#define TYPE_NORMAL      0x04
-#define TYPE_BOUNDARY    0x03
-#define TYPE_BSHADOW     0x02
-#define TYPE_BACKNONCOLL 0x01
-#define TYPE_BACKGROUND  0x00
+#define BITS_MASK          0xC0
+#define FOUR_PER_PIXEL     0xC0
+#define THREE_PER_PIXEL    0x80
+#define TWO_PER_PIXEL      0x40
+#define ONE_PER_PIXEL      0x00
+#define HFLIP              0x20
+#define VFLIP              0x10
+#define SHADOW_SPRITE      0x07
+#define XOR_SPRITE         0x06
+#define NONCOLL_SPRITE     0x05
+#define NORMAL_SPRITE      0x04
+#define BOUNDARY_SPRITE    0x03
+#define BSHADOW_SPRITE     0x02
+#define BACKNONCOLL_SPRITE 0x01
+#define BACKGROUND_SPRITE  0x00
 
 // SPRCTL1 bit definitions
-#define LITERAL          0x80
-#define PACKED           0x00
-#define ALGO_3           0x40  // Do not use algo 3 shifter (buggy) 
-#define RELOAD_MASK      0x30
-#define RENONE           0x00
-#define REHV             0x10
-#define REHVS            0x20
-#define REHVST           0x30
-#define REUSEPAL         0x08
-#define SKIP             0x04
-#define DRAWUP           0x02
-#define DRAWLEFT         0x01
+#define LITERAL            0x80
+#define PACKED             0x00
+#define ALGO_3             0x40  // Do not use algo 3 shifter (buggy) 
+#define RELOAD_MASK        0x30
+#define RELOAD_NONE        0x00
+#define RELOAD_HV          0x10
+#define RELOAD_HVS         0x20
+#define RELOAD_HVST        0x30
+#define REUSE_PALETTE      0x08
+#define SKIP_SPRITE        0x04
+#define DRAW_UP            0x02
+#define DRAW_LEFT          0x01
 
-typedef struct SCB_REHVST_PAL {             // SCB with all attributes
+typedef struct SCB_HVST_PAL4 {             // SCB with all attributes
   unsigned char sprctl0;
   unsigned char sprctl1;
   unsigned char sprcoll;
@@ -91,9 +91,9 @@ typedef struct SCB_REHVST_PAL {             // SCB with all attributes
   unsigned int stretch;
   unsigned int tilt;
   unsigned char penpal[8];
-} SCB_REHVST_PAL;
+} SCB_HVST_PAL4;
 
-typedef struct SCB_REHVST {                  // SCB without pallette
+typedef struct SCB_HVST {                  // SCB without pallette
   unsigned char sprctl0;
   unsigned char sprctl1;
   unsigned char sprcoll;
@@ -105,9 +105,9 @@ typedef struct SCB_REHVST {                  // SCB without pallette
   unsigned int vsize;
   unsigned int stretch;
   unsigned int tilt;
-} SCB_REHVST;
+} SCB_HVST;
 
-typedef struct SCB_REHV {                 // SCB without stretch/tilt
+typedef struct SCB_HV {                 // SCB without stretch/tilt
   unsigned char sprctl0;
   unsigned char sprctl1;
   unsigned char sprcoll;
@@ -117,9 +117,9 @@ typedef struct SCB_REHV {                 // SCB without stretch/tilt
   signed int vpos;
   unsigned int hsize;
   unsigned int vsize;
-} SCB_REHV;
+} SCB_HV;
 
-typedef struct SCB_REHV_PAL {             // SCB without str/tilt, w/ penpal
+typedef struct SCB_HV_PAL4 {             // SCB without str/tilt, w/ penpal
   unsigned char sprctl0;
   unsigned char sprctl1;
   unsigned char sprcoll;
@@ -130,22 +130,9 @@ typedef struct SCB_REHV_PAL {             // SCB without str/tilt, w/ penpal
   unsigned int hsize;
   unsigned int vsize;
   unsigned char penpal[8];
-} SCB_REHV_PAL;
+} SCB_HV_PAL4;
 
-typedef struct SCB_REHVS {                // SCB w/o tilt & penpal
-  unsigned char sprctl0;
-  unsigned char sprctl1;
-  unsigned char sprcoll;
-  char *next;
-  unsigned char *data;
-  signed int hpos;
-  signed int vpos;
-  unsigned int hsize;
-  unsigned int vsize;
-  unsigned int stretch;
-} SCB_REHVS;
-
-typedef struct SCB_REHVS_PAL {            // SCB w/o tilt w/penpal
+typedef struct SCB_HVS {                // SCB w/o tilt & penpal
   unsigned char sprctl0;
   unsigned char sprctl1;
   unsigned char sprcoll;
@@ -156,10 +143,9 @@ typedef struct SCB_REHVS_PAL {            // SCB w/o tilt w/penpal
   unsigned int hsize;
   unsigned int vsize;
   unsigned int stretch;
-  unsigned char penpal[8];
-} SCB_REHVS_PAL;
+} SCB_HVS;
 
-typedef struct SCB_RENONE {                 // SCB w/o size/stretch/tilt/pal
+typedef struct SCB_HVS_PAL4 {            // SCB w/o tilt w/penpal
   unsigned char sprctl0;
   unsigned char sprctl1;
   unsigned char sprcoll;
@@ -167,9 +153,23 @@ typedef struct SCB_RENONE {                 // SCB w/o size/stretch/tilt/pal
   unsigned char *data;
   signed int hpos;
   signed int vpos;
-} SCB_RENONE;
+  unsigned int hsize;
+  unsigned int vsize;
+  unsigned int stretch;
+  unsigned char penpal[8];
+} SCB_HVS_PAL4;
 
-typedef struct SCB_RENONE_PAL {             // SCB w/o size/str/tilt w/penpal
+typedef struct SCB_NONE {                 // SCB w/o size/stretch/tilt/pal
+  unsigned char sprctl0;
+  unsigned char sprctl1;
+  unsigned char sprcoll;
+  char *next;
+  unsigned char *data;
+  signed int hpos;
+  signed int vpos;
+} SCB_NONE;
+
+typedef struct SCB_NONE_PAL4 {             // SCB w/o size/str/tilt w/penpal
   unsigned char sprctl0;
   unsigned char sprctl1;
   unsigned char sprcoll;
@@ -178,25 +178,9 @@ typedef struct SCB_RENONE_PAL {             // SCB w/o size/str/tilt w/penpal
   signed int hpos;
   signed int vpos;
   unsigned char penpal[8];
-} SCB_RENONE_PAL;
+} SCB_NONE_PAL4;
 
-typedef struct PENPAL_4 {
-  unsigned char penpal[8];
-} PENPAL_4;
-
-typedef struct PENPAL_3 {
-  unsigned char penpal[4];
-} PENPAL_3;
-
-typedef struct PENPAL_2 {
-  unsigned char penpal[2];
-} PENPAL_2;
-
-typedef struct PENPAL_1 {
-  unsigned char penpal[1];
-} PENPAL_1;
-
-/* Misc system defines */
+// Miscellaneous Mikey definitions
 
 // SPRGO bit definitions
 #define EVER_ON           0x04
@@ -208,7 +192,7 @@ typedef struct PENPAL_1 {
 #define NO_COLLIDE        0x20 // Also SPRCOLL bit definition
 #define VSTRETCH          0x10
 #define LEFTHAND          0x08
-#define CLR_UNSAFE        0x04
+#define UNSAFEACCESSRST   0x04
 #define SPRITESTOP        0x02
 
 // SPRSYS bit definitions for read operations
@@ -222,16 +206,16 @@ typedef struct PENPAL_1 {
 #define SPRITEWORKING     0x01
 
 // JOYSTICK bit definitions
-#define JOYPAD_RIGHT      0x10
-#define JOYPAD_LEFT       0x20
-#define JOYPAD_DOWN       0x40
-#define JOYPAD_UP         0x80
-#define BUTTON_OPTION1    0x08
-#define BUTTON_OPTION2    0x04
-#define BUTTON_INNER      0x02
-#define BUTTON_OUTER      0x01
-#define BUTTON_A          BUTTON_OUTER
-#define BUTTON_B          BUTTON_INNER
+#define JOY_RIGHT         0x10
+#define JOY_LEFT          0x20
+#define JOY_DOWN          0x40
+#define JOY_UP            0x80
+#define OPTION1_BUTTON    0x08
+#define OPTION2_BUTTON    0x04
+#define INNER_BUTTON      0x02
+#define OUTER_BUTTON      0x01
+#define A_BUTTON          OUTER_BUTTON
+#define B_BUTTON          INNER_BUTTON
 
 // SWITCHES bit definitions
 #define CART1_IO_INACTIVE 0x04
