@@ -294,8 +294,8 @@ struct __suzy {
         };
         unsigned long product;      // 0xFC60 - 0xFC63
         struct {
-            unsigned int divident1;     // 0xFC60 - 0xFC61
-            unsigned int divident2;     // 0xFC62 - 0xFC63
+            unsigned int dividend1;     // 0xFC60 - 0xFC61
+            unsigned int dividend2;     // 0xFC62 - 0xFC63
         };
     };
     unsigned char unused3[8];       // 0xFC64 - 0xFC6B  do not use
