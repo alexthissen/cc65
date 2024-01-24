@@ -27,25 +27,6 @@
 #ifndef __SUZY_H
 #define __SUZY_H
 
-// Math hardware
-#define FACTOR_B *(unsigned int *) 0xFC52
-#define FACTOR_A *(unsigned int *) 0xFC54
-
-#define PRODUCT *(long *) 0xFC60
-#define PRODUCT0 *(unsigned int *) 0xFC60
-#define PRODUCT1 *(unsigned int *) 0xFC62
-
-#define QUOTIENT *(long *) 0xFC52
-#define QUOTIENT0 *(unsigned int *) 0xFC52
-#define QUOTIENT1 *(unsigned int *) 0xFC54
-#define DIVISOR *(unsigned int *) 0xFC56
-#define DIVIDEND *(long *) 0xFC60
-#define DIVIDEND0 *(unsigned int *) 0xFC60
-#define DIVIDEND1 *(unsigned int *) 0xFC62
-#define REMAINDER *(long *) 0xFC6C
-#define REMAINDER0 *(unsigned int *) 0xFC6C
-#define REMAINDER1 *(unsigned int *) 0xFC6E
-
 // Sprite control block (SCB) defines
 
 // SPRCTL0 bit definitions
@@ -141,7 +122,8 @@ typedef struct scb_hv_pal4 {
     unsigned char penpal[8];
 } scb_hv_pal4;
 
-typedef struct SCB_HVS {                // SCB w/o tilt & penpal
+// Sprite control block without tilt and palette
+typedef struct scb_hvs {
     unsigned char sprctl0;
     unsigned char sprctl1;
     unsigned char sprcoll;
@@ -152,10 +134,11 @@ typedef struct SCB_HVS {                // SCB w/o tilt & penpal
     unsigned int hsize;
     unsigned int vsize;
     unsigned int stretch;
-} SCB_HVS;
+} scb_hvs;
 
-typedef struct SCB_HVS_PAL4 {            // SCB w/o tilt w/penpal
-    unsigned char sprctl0;
+// Sprite control block with palette and without tilt
+typedef struct scb_hvs_pal4 {
+    unsigned char sprctl0; // set RELOAD_HVS
     unsigned char sprctl1;
     unsigned char sprcoll;
     char *next;
@@ -166,7 +149,7 @@ typedef struct SCB_HVS_PAL4 {            // SCB w/o tilt w/penpal
     unsigned int vsize;
     unsigned int stretch;
     unsigned char penpal[8];
-} SCB_HVS_PAL4;
+} scb_hvs_pal4;
 
 // Sprite control block without stretch, tilt, palette
 typedef struct scb_none {
@@ -195,8 +178,8 @@ typedef struct scb_none_pal4 {
 
 // SPRGO bit definitions
 enum {
-    EVER_ON           0x04  // Everon detector enable
-    SPRITE_GO         0x01  // Sprite process start bit
+    SPRITE_GO = 0x01,  // sprite process start bit
+    EVER_ON   = 0x04   // everon detector enable
 };
 
 // SPRSYS bit definitions for write operations
@@ -243,6 +226,35 @@ enum {
     BUTTON_PAUSE      = 0x01
 };
 
+// Structure for unsigned multiplications math registers
+struct _math_unsigned_multiply {
+    unsigned int factor1;         // 0xFC52 - 0xFC53
+    unsigned int factor2;         // 0xFC54 - 0xFC55  write starts multiply
+    unsigned char unused2[10];    // 0xFC56 - 0xFC5F  do not use
+    unsigned long product;        // 0xFC60 - 0xFC63
+    unsigned char unused3[8];     // 0xFC64 - 0xFC6B  do not use
+    unsigned long accumulate;     // 0xFC6C - 0xFC6F
+};
+
+struct _math_signed_multiply {
+    int factor1;                  // 0xFC52 - 0xFC53
+    int factor2;                  // 0xFC54 - 0xFC55  write starts multiply
+    unsigned char unused2[10];    // 0xFC56 - 0xFC5F  do not use
+    long product;                 // 0xFC60 - 0xFC63
+    unsigned char unused3[8];     // 0xFC64 - 0xFC6B  do not use
+    long accumulate;              // 0xFC6C - 0xFC6F
+};
+
+struct _math_divide {
+    unsigned long quotient;       // 0xFC52 - 0xFC53
+    unsigned int divisor;         // 0xFC54 - 0xFC55
+    unsigned char unused2[8];     // 0xFC56 - 0xFC5F  do not use
+    unsigned int dividend2;       // 0xFC60 - 0xFC61
+    unsigned int dividend1;       // 0xFC62 - 0xFC63 write starts divide
+    unsigned char unused3[8];     // 0xFC64 - 0xFC6B  do not use
+    unsigned long remainder;      // 0xFC6C - 0xFC6F
+};
+
 // Structure for Suzy register offsets 
 struct __suzy {
     unsigned char *tmpadr;        // 0xFC00* temporary address 
@@ -272,74 +284,52 @@ struct __suzy {
     unsigned char unused0[32];    // 0xFC30 - 0xFC4F  reserved
     unsigned char unused1[2];     // 0xFC50 - 0xFC51  do not use
     union {
-        struct { 
-            unsigned char mathd;  // 0xFC52
-            unsigned char mathc;  // 0xFC53
-            unsigned char mathb;  // 0xFC54
-            unsigned char matha;  // 0xFC55  write starts a multiply operation
-        };
-        unsigned long quotient;   // 0xFC52 - 0xFC55
         struct {
-            unsigned int factor1; // 0xFC52 - 0xFC53
-            unsigned int factor2; // 0xFC54 - 0xFC55
+            unsigned char mathd;      // 0xFC52
+            unsigned char mathc;      // 0xFC53
+            unsigned char mathb;      // 0xFC54
+            unsigned char matha;      // 0xFC55  write starts a multiply operation
+            unsigned char mathp;      // 0xFC56
+            unsigned char mathn;      // 0xFC57
+            unsigned char unused2[8]; // 0xFC58 - 0xFC5F  do not use
+            unsigned char mathh;      // 0xFC60
+            unsigned char mathg;      // 0xFC61
+            unsigned char mathf;      // 0xFC62
+            unsigned char mathe;      // 0xFC63  write starts a divide operation
+            unsigned char unused3[8]; // 0xFC64 - 0xFC6B  do not use
+            unsigned char mathm;      // 0xFC6C
+            unsigned char mathl;      // 0xFC6D
+            unsigned char mathk;      // 0xFC6E
+            unsigned char mathj;      // 0xFC6F
         };
+        struct _math_unsigned_multiply math_unsigned_multiply;
+        struct _math_signed_multiply math_signed_multiply;
+        struct _math_divide math_divide;
     };
-    union {
-        struct {
-            unsigned char mathp;    // 0xFC56
-            unsigned char mathn;    // 0xFC57
-        };
-        unsigned int divisor;       // 0xFC56 - 0xFC57
-    };
-    unsigned char unused2[8];       // 0xFC58 - 0xFC5F  do not use
-    union {
-        struct {
-            unsigned char mathh;    // 0xFC60
-            unsigned char mathg;    // 0xFC61
-            unsigned char mathf;    // 0xFC62
-            unsigned char mathe;    // 0xFC63  write starts a divide operation
-        };
-        unsigned long product;      // 0xFC60 - 0xFC63
-        struct {
-            unsigned int dividend1; // 0xFC60 - 0xFC61
-            unsigned int dividend2; // 0xFC62 - 0xFC63
-        };
-    };
-    unsigned char unused3[8];       // 0xFC64 - 0xFC6B  do not use
-    union {
-        struct {
-            unsigned char mathm;    // 0xFC6C
-            unsigned char mathl;    // 0xFC6D
-            unsigned char mathk;    // 0xFC6E
-            unsigned char mathj;    // 0xFC6F
-        };
-        unsigned long accumulate;   // 0xFC6C - 0xFC6F
-        unsigned long remainder;    // 0xFC6C - 0xFC6F
-    };
-    unsigned char unused4[16];      // 0xFC70 - 0xFC7F  do not use
-    unsigned char sprctl0;          // 0xFC80  sprite control bits 0
-    unsigned char sprctl1;          // 0xFC81  sprite control bits 1
-    unsigned char sprcoll;          // 0xFC82  sprite collision number
-    unsigned char sprinit;          // 0xFC83  sprite initialization bits
-    unsigned char unused5[4];       // 0xFC84 - 0xFC87  unused
-    unsigned char suzyhrev;         // 0xFC88  suzy hardware rev
-    unsigned char suzysrev;         // 0xFC89  suzy software rev
-    unsigned char unused6[6];       // 0xFC8A - 0xFC8F  unused
-    unsigned char suzybusen;        // 0xFC90  suzy bus enable
-    unsigned char sprgo;            // 0xFC91  sprite process start bit
-    unsigned char sprsys;           // 0xFC92  sprite system control bits
-    unsigned char unused7[29];      // 0xFC93 - 0xFCAF  unused
-    unsigned char joystick;         // 0xFCB0  joystick and buttons
-    unsigned char switches;         // 0xFCB1  other switches
-    unsigned char rcart0;           // 0xFCB2  cart0 r/w
-    unsigned char rcart1;           // 0xFCB3  cart1 r/w
-    unsigned char unused8[8];       // 0xFCB4 - 0xFCBF  unused
-    unsigned char leds;             // 0xFCC0  leds
-    unsigned char unused9;          // 0xFCC1  unused
-    unsigned char iostatus;         // 0xFCC2  parallel IO port status
-    unsigned char iodata;           // 0xFCC3  parallel IO port data
-    unsigned char howie;            // 0xFCC4  howie 
-                                    // 0xFCC5 - 0xFCFF  unused
+    unsigned char unused4[16];        // 0xFC70 - 0xFC7F  do not use
+    unsigned char sprctl0;            // 0xFC80  sprite control bits 0
+    unsigned char sprctl1;            // 0xFC81  sprite control bits 1
+    unsigned char sprcoll;            // 0xFC82  sprite collision number
+    unsigned char sprinit;            // 0xFC83  sprite initialization bits
+    unsigned char unused5[4];         // 0xFC84 - 0xFC87  unused
+    unsigned char suzyhrev;           // 0xFC88  suzy hardware revision
+    unsigned char suzysrev;           // 0xFC89  suzy software revision
+    unsigned char unused6[6];         // 0xFC8A - 0xFC8F  unused
+    unsigned char suzybusen;          // 0xFC90  suzy bus enable
+    unsigned char sprgo;              // 0xFC91  sprite process start bit
+    unsigned char sprsys;             // 0xFC92  sprite control bits
+    unsigned char unused7[29];        // 0xFC93 - 0xFCAF  unused
+    unsigned char joystick;           // 0xFCB0  joystick and buttons
+    unsigned char switches;           // 0xFCB1  other switches
+    unsigned char rcart0;             // 0xFCB2  cart0 read/write
+    unsigned char rcart1;             // 0xFCB3  cart1 read/write
+    unsigned char unused8[8];         // 0xFCB4 - 0xFCBF  unused
+    unsigned char leds;               // 0xFCC0  leds
+    unsigned char unused9;            // 0xFCC1  unused
+    unsigned char iostatus;           // 0xFCC2  parallel IO port status
+    unsigned char iodata;             // 0xFCC3  parallel IO port data
+    unsigned char howie;              // 0xFCC4  howie 
+                                      // 0xFCC5 - 0xFCFF  unused
 };
 
 #endif

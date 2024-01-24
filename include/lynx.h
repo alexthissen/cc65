@@ -76,20 +76,6 @@
 #define TGI_COLOR_LIGHTBLUE     COLOR_LIGHTBLUE
 #define TGI_COLOR_WHITE         COLOR_WHITE
 
-// Masks for joy_read
-#define JOY_UP_MASK             JOY_UP
-#define JOY_DOWN_MASK           JOY_DOWN
-#define JOY_LEFT_MASK           JOY_LEFT
-#define JOY_RIGHT_MASK          JOY_RIGHT
-#define JOY_BTN_1_MASK          A_BUTTON
-#define JOY_BTN_2_MASK          B_BUTTON
-
-#define JOY_BTN_A_MASK          JOY_BTN_1_MASK
-#define JOY_BTN_B_MASK          JOY_BTN_2_MASK
-
-#define JOY_BTN_A(v)            ((v) & JOY_BTN_A_MASK)
-#define JOY_BTN_B(v)            ((v) & JOY_BTN_B_MASK)
-
 // No support for dynamically loadable drivers
 #define DYN_DRV 0
 
@@ -139,6 +125,20 @@ unsigned __fastcall__ lynx_eewrite (unsigned cell, unsigned val); // Write the w
 
 #include <_suzy.h>
 #define SUZY (*(struct __suzy*)0xFC00)
+
+// Masks for joy_read
+#define JOY_UP_MASK             JOY_UP
+#define JOY_DOWN_MASK           JOY_DOWN
+#define JOY_LEFT_MASK           JOY_LEFT
+#define JOY_RIGHT_MASK          JOY_RIGHT
+#define JOY_BTN_1_MASK          A_BUTTON
+#define JOY_BTN_2_MASK          B_BUTTON
+
+#define JOY_BTN_A_MASK          JOY_BTN_1_MASK
+#define JOY_BTN_B_MASK          JOY_BTN_2_MASK
+
+#define JOY_BTN_A(v)            ((v) & JOY_BTN_A_MASK)
+#define JOY_BTN_B(v)            ((v) & JOY_BTN_B_MASK)
 
 /* End of lynx.h */
 #endif
