@@ -246,9 +246,9 @@ struct _math_signed_multiply {
 };
 
 struct _math_divide {
-    unsigned long quotient;       // 0xFC52 - 0xFC53
-    unsigned int divisor;         // 0xFC54 - 0xFC55
-    unsigned char unused2[8];     // 0xFC56 - 0xFC5F  do not use
+    unsigned long quotient;       // 0xFC52 - 0xFC55
+    unsigned int divisor;         // 0xFC56 - 0xFC57
+    unsigned char unused2[8];     // 0xFC58 - 0xFC5F  do not use
     unsigned int dividend2;       // 0xFC60 - 0xFC61
     unsigned int dividend1;       // 0xFC62 - 0xFC63 write starts divide
     unsigned char unused3[8];     // 0xFC64 - 0xFC6B  do not use
