@@ -49,41 +49,46 @@
 // Sprite control block (SCB) defines
 
 // SPRCTL0 bit definitions
-#define BITS_MASK          0xC0
-#define FOUR_PER_PIXEL     0xC0
-#define THREE_PER_PIXEL    0x80
-#define TWO_PER_PIXEL      0x40
-#define ONE_PER_PIXEL      0x00
-#define HFLIP              0x20
-#define VFLIP              0x10
-#define SHADOW_SPRITE      0x07
-#define XOR_SPRITE         0x06
-#define NONCOLL_SPRITE     0x05
-#define NORMAL_SPRITE      0x04
-#define BOUNDARY_SPRITE    0x03
-#define BSHADOW_SPRITE     0x02
-#define BACKNONCOLL_SPRITE 0x01
-#define BACKGROUND_SPRITE  0x00
+enum {
+    BITS_MASK          = 0xC0,
+    FOUR_PER_PIXEL     = 0xC0,
+    THREE_PER_PIXEL    = 0x80,
+    TWO_PER_PIXEL      = 0x40,
+    ONE_PER_PIXEL      = 0x00,
+    HFLIP              = 0x20,
+    VFLIP              = 0x10,
+    SHADOW_SPRITE      = 0x07,
+    XOR_SPRITE         = 0x06,
+    NONCOLL_SPRITE     = 0x05,
+    NORMAL_SPRITE      = 0x04,
+    BOUNDARY_SPRITE    = 0x03,
+    BSHADOW_SPRITE     = 0x02,
+    BACKNONCOLL_SPRITE = 0x01,
+    BACKGROUND_SPRITE  = 0x00
+};
 
 // SPRCTL1 bit definitions
-#define LITERAL            0x80
-#define PACKED             0x00
-#define ALGO_3             0x40  // Do not use algo 3 shifter (buggy) 
-#define RELOAD_MASK        0x30
-#define RELOAD_NONE        0x00
-#define RELOAD_HV          0x10
-#define RELOAD_HVS         0x20
-#define RELOAD_HVST        0x30
-#define REUSE_PALETTE      0x08
-#define SKIP_SPRITE        0x04
-#define DRAW_UP            0x02
-#define DRAW_LEFT          0x01
+enum {
+    LITERAL       = 0x80,
+    PACKED        = 0x00,
+    ALGO_3        = 0x40,  // Do not use algo 3 shifter (buggy) 
+    RELOAD_MASK   = 0x30,
+    RELOAD_NONE   = 0x00,
+    RELOAD_HV     = 0x10,
+    RELOAD_HVS    = 0x20,
+    RELOAD_HVST   = 0x30,
+    REUSE_PALETTE = 0x08,
+    SKIP_SPRITE   = 0x04,
+    DRAW_UP       = 0x02,
+    DRAW_LEFT     = 0x01
+};
 
-typedef struct SCB_HVST_PAL4 {             // SCB with all attributes
-    unsigned char sprctl0;
+// Sprite control block  with all attributes
+typedef struct scb_hvst_pal4 {  
+    unsigned char sprctl0; // set RELOAD_HVST
     unsigned char sprctl1;
     unsigned char sprcoll;
-    char *next;
+    unsigned char *next;
     unsigned char *data;
     signed int hpos;
     signed int vpos;
@@ -92,13 +97,14 @@ typedef struct SCB_HVST_PAL4 {             // SCB with all attributes
     unsigned int stretch;
     unsigned int tilt;
     unsigned char penpal[8];
-} SCB_HVST_PAL4;
+} scb_hvst_pal4;
 
-typedef struct SCB_HVST {                  // SCB without pallette
-    unsigned char sprctl0;
+// Sprite control block with all attributes except penpal
+typedef struct scb_hvst {
+    unsigned char sprctl0; // set RELOAD_HVST | REUSE_PALETTE
     unsigned char sprctl1;
     unsigned char sprcoll;
-    char *next;
+    unsigned char *next;
     unsigned char *data;
     signed int hpos;
     signed int vpos;
@@ -106,22 +112,24 @@ typedef struct SCB_HVST {                  // SCB without pallette
     unsigned int vsize;
     unsigned int stretch;
     unsigned int tilt;
-} SCB_HVST;
+} scb_hvst;
 
-typedef struct SCB_HV {                 // SCB without stretch/tilt
-    unsigned char sprctl0;
+// Sprite control block without stretch, tilt and penpal
+typedef struct scb_hv {
+    unsigned char sprctl0; // set RELOAD_HV | REUSE_PALETTE
     unsigned char sprctl1;
     unsigned char sprcoll;
-    char *next;
+    unsigned char *next;
     unsigned char *data;
     signed int hpos;
     signed int vpos;
     unsigned int hsize;
     unsigned int vsize;
-} SCB_HV;
+} scb_hv;
 
-typedef struct SCB_HV_PAL4 {             // SCB without str/tilt, w/ penpal
-    unsigned char sprctl0;
+// Sprite control block with palette and without stretch, tilt
+typedef struct scb_hv_pal4 {             
+    unsigned char sprctl0; // set RELOAD_HV 
     unsigned char sprctl1;
     unsigned char sprcoll;
     char *next;
@@ -131,7 +139,7 @@ typedef struct SCB_HV_PAL4 {             // SCB without str/tilt, w/ penpal
     unsigned int hsize;
     unsigned int vsize;
     unsigned char penpal[8];
-} SCB_HV_PAL4;
+} scb_hv_pal4;
 
 typedef struct SCB_HVS {                // SCB w/o tilt & penpal
     unsigned char sprctl0;
@@ -160,18 +168,20 @@ typedef struct SCB_HVS_PAL4 {            // SCB w/o tilt w/penpal
     unsigned char penpal[8];
 } SCB_HVS_PAL4;
 
-typedef struct SCB_NONE {                 // SCB w/o size/stretch/tilt/pal
-    unsigned char sprctl0;
+// Sprite control block without stretch, tilt, palette
+typedef struct scb_none {
+    unsigned char sprctl0; // set RELOAD_NONE | REUSE_PALETTE
     unsigned char sprctl1;
     unsigned char sprcoll;
     char *next;
     unsigned char *data;
     signed int hpos;
     signed int vpos;
-} SCB_NONE;
+} scb_none;
 
-typedef struct SCB_NONE_PAL4 {             // SCB w/o size/str/tilt w/penpal
-    unsigned char sprctl0;
+// Sprite control block with palette without size, stretch, tilt
+typedef struct scb_none_pal4 {
+    unsigned char sprctl0; // set RELOAD_NONE
     unsigned char sprctl1;
     unsigned char sprcoll;
     char *next;
@@ -179,45 +189,40 @@ typedef struct SCB_NONE_PAL4 {             // SCB w/o size/str/tilt w/penpal
     signed int hpos;
     signed int vpos;
     unsigned char penpal[8];
-} SCB_NONE_PAL4;
+} scb_none_pal4;
 
 // Miscellaneous Mikey definitions
 
 // SPRGO bit definitions
-#define EVER_ON           0x04
-#define SPRITE_GO         0x01
+enum {
+    EVER_ON           0x04  // Everon detector enable
+    SPRITE_GO         0x01  // Sprite process start bit
+};
 
 // SPRSYS bit definitions for write operations
-#define SIGNMATH          0x80
-#define ACCUMULATE        0x40
-#define NO_COLLIDE        0x20 // Also SPRCOLL bit definition
-#define VSTRETCH          0x10
-#define LEFTHAND          0x08
-#define UNSAFEACCESSRST   0x04
-#define SPRITESTOP        0x02
+enum {
+    SIGNMATH        = 0x80,  // signed math
+    ACCUMULATE      = 0x40,  // accumulate multiplication results
+    NO_COLLIDE      = 0x20,  // do not collide with any sprites (also SPRCOLL bit definition)
+    VSTRETCH        = 0x10,  // stretch v
+    LEFTHAND        = 0x08,
+    UNSAFEACCESSRST = 0x04,  // unsafe access reset
+    SPRITESTOP      = 0x02  // request to stop sprite process
+};
 
 // SPRSYS bit definitions for read operations
-#define MATHWORKING       0x80
-#define MATHWARNING       0x40
-#define MATHCARRY         0x20
-#define VSTRETCHING       0x10
-#define LEFTHANDED        0x08
-#define UNSAFEACCESS      0x04
-#define SPRITETOSTOP      0x02
-#define SPRITEWORKING     0x01
+enum {
+    MATHWORKING   = 0x80,  // math operation in progress
+    MATHWARNING   = 0x40,  // accumulator overflow on multiple or divide by zero
+    MATHCARRY     = 0x20,  // last carry bit
+    VSTRETCHING   = 0x10,
+    LEFTHANDED    = 0x08,
+    UNSAFEACCESS  = 0x04,  // unsafe access performed
+    SPRITETOSTOP  = 0x02,  // requested to stop 
+    SPRITEWORKING = 0x01  // sprite process is active
+};
 
 // JOYSTICK bit definitions
-// #define JOYPAD_RIGHT      0x10
-// #define JOYPAD_LEFT       0x20
-// #define JOYPAD_DOWN       0x40
-// #define JOYPAD_UP         0x80
-// #define OPTION1_BUTTON    0x08
-// #define OPTION2_BUTTON    0x04
-// #define INNER_BUTTON      0x02
-// #define OUTER_BUTTON      0x01
-// #define A_BUTTON          OUTER_BUTTON
-// #define B_BUTTON          INNER_BUTTON
-
 enum {
     JOY_RIGHT      = 0x10,
     JOY_LEFT       = 0x20,
@@ -232,46 +237,48 @@ enum {
 };
 
 // SWITCHES bit definitions
-#define CART1_IO_INACTIVE 0x04
-#define CART0_IO_INACTIVE 0x02
-#define BUTTON_PAUSE      0x01
+enum {
+    CART1_IO_INACTIVE = 0x04,
+    CART0_IO_INACTIVE = 0x02,
+    BUTTON_PAUSE      = 0x01
+};
 
 // Structure for Suzy register offsets 
 struct __suzy {
-    unsigned int  tmpadr;         // 0xFC00  Temporary address
-    unsigned int  tiltacc;        // 0xFC02  Tilt accumulator
-    unsigned int  hoff;           // 0xFC04  Offset to H edge of screen
-    unsigned int  voff;           // 0xFC06  Offset to V edge of screen
-    unsigned char *sprbase;       // 0xFC08  Base address of sprite
-    unsigned char *colbase;       // 0xFC0A  Base address of collision buffer
-    unsigned char *vidadr;        // 0xFC0C  Current vid buffer address
-    unsigned char *coladr;        // 0xFC0E  Current col buffer address
-    unsigned char *scbnext;       // 0xFC10  Address of next SCB
+    unsigned char *tmpadr;        // 0xFC00* temporary address 
+    unsigned int  tiltacum;       // 0xFC02* accumulator for tilt value
+    unsigned int  hoff;           // 0xFC04  offset to H edge of screen
+    unsigned int  voff;           // 0xFC06  offset to V edge of screen
+    unsigned char *vidbas;        // 0xFC08  base address of video build buffer
+    unsigned char *collbas;       // 0xFC0A  base address of collision buffer
+    unsigned char *vidadr;        // 0xFC0C* current video build address
+    unsigned char *colladr;       // 0xFC0E* current collision buffer address
+    unsigned char *scbnext;       // 0xFC10  address of next SCB
     unsigned char *sprdline;      // 0xFC12  start of sprite data line address
-    unsigned char *hposstrt;      // 0xFC14  start hpos
-    unsigned char *vposstrt;      // 0xFC16  start vpos
-    unsigned char *sprhsize;      // 0xFC18  sprite h size
-    unsigned char *sprvsize;      // 0xFC1A  sprite v size
-    unsigned int  stretchl;       // 0xFC1C  H size adder
-    unsigned int  tilt;           // 0xFC1E  H pos adder
+    unsigned int  hposstrt;       // 0xFC14  start hpos
+    unsigned int  vposstrt;       // 0xFC16  start vpos
+    unsigned int  sprhsiz;        // 0xFC18  sprite h size
+    unsigned int  sprvsiz;        // 0xFC1A  sprite v size
+    unsigned int  stretch;        // 0xFC1C  H size adder
+    unsigned int  tilt;           // 0xFC1E  H position adder
     unsigned int  sprdoff;        // 0xFC20  offset to next sprite data line
     unsigned int  sprvpos;        // 0xFC22  current vpos
     unsigned int  colloff;        // 0xFC24  offset to collision depository
-    unsigned int  vsizeacc;       // 0xFC26  vertical size accumulator
-    unsigned int  hsizeoff;       // 0xFC28  horizontal size offset
-    unsigned int  vsizeoff;       // 0xFC2A  vertical size offset
-    unsigned char *scbaddr;       // 0xFC2C  address of current SCB
-    unsigned char *procaddr;      // 0xFC2E  address of current spr data proc
-    unsigned char unused0[32];    // 0xFC30 - 0xFC4F  reserved/unused
+    unsigned int  vsizacum;       // 0xFC26  vertical size accumulator
+    unsigned int  hsizoff;        // 0xFC28  horizontal size offset
+    unsigned int  vsizoff;        // 0xFC2A  vertical size offset
+    unsigned char *scbadr;        // 0xFC2C  address of current SCB
+    unsigned char *procadr;       // 0xFC2E  address of current sprite data proc
+    unsigned char unused0[32];    // 0xFC30 - 0xFC4F  reserved
     unsigned char unused1[2];     // 0xFC50 - 0xFC51  do not use
     union {
         struct { 
-            unsigned char mathd;    // 0xFC52
-            unsigned char mathc;    // 0xFC53
-            unsigned char mathb;    // 0xFC54
-            unsigned char matha;    // 0xFC55
+            unsigned char mathd;  // 0xFC52
+            unsigned char mathc;  // 0xFC53
+            unsigned char mathb;  // 0xFC54
+            unsigned char matha;  // 0xFC55  write starts a multiply operation
         };
-        unsigned long quotient;     // 0xFC52 - 0xFC55
+        unsigned long quotient;   // 0xFC52 - 0xFC55
         struct {
             unsigned int factor1; // 0xFC52 - 0xFC53
             unsigned int factor2; // 0xFC54 - 0xFC55
@@ -290,12 +297,12 @@ struct __suzy {
             unsigned char mathh;    // 0xFC60
             unsigned char mathg;    // 0xFC61
             unsigned char mathf;    // 0xFC62
-            unsigned char mathe;    // 0xFC63
+            unsigned char mathe;    // 0xFC63  write starts a divide operation
         };
         unsigned long product;      // 0xFC60 - 0xFC63
         struct {
-            unsigned int dividend1;     // 0xFC60 - 0xFC61
-            unsigned int dividend2;     // 0xFC62 - 0xFC63
+            unsigned int dividend1; // 0xFC60 - 0xFC61
+            unsigned int dividend2; // 0xFC62 - 0xFC63
         };
     };
     unsigned char unused3[8];       // 0xFC64 - 0xFC6B  do not use

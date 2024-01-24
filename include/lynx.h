@@ -129,7 +129,7 @@ unsigned __fastcall__ lynx_eewrite (unsigned cell, unsigned val); // Write the w
 
 // Hardware definitions
 #include <_mikey.h>
-#define MIKEY (*(struct __mikey *) 0xFD00)
+#define MIKEY (*(struct __mikey*) 0xFD00)
 
 #define _MIKEY_TIMERS (*(struct _mikey_all_timers *) 0xFD00)  // mikey_timers[8]
 #define _HBL_TIMER (*(struct _mikey_timer *) 0xFD00)          // timer0 (HBL)
