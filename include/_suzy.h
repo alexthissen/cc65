@@ -52,7 +52,7 @@ enum {
 enum {
     LITERAL       = 0x80,
     PACKED        = 0x00,
-    ALGO_3        = 0x40,  // Do not use algo 3 shifter (buggy) 
+    ALGO_3        = 0x40,  // Do not use algo 3 shifter (buggy)
     RELOAD_MASK   = 0x30,
     RELOAD_NONE   = 0x00,
     RELOAD_HV     = 0x10,
@@ -64,8 +64,8 @@ enum {
     DRAW_LEFT     = 0x01
 };
 
-// Sprite control block  with all attributes
-typedef struct scb_hvst_pal4 {  
+// Sprite control block with all attributes
+typedef struct scb_hvst_pal4 {
     unsigned char sprctl0; // set RELOAD_HVST
     unsigned char sprctl1;
     unsigned char sprcoll;
@@ -109,8 +109,8 @@ typedef struct scb_hv {
 } scb_hv;
 
 // Sprite control block with palette and without stretch, tilt
-typedef struct scb_hv_pal4 {             
-    unsigned char sprctl0; // set RELOAD_HV 
+typedef struct scb_hv_pal4 {
+    unsigned char sprctl0; // set RELOAD_HV
     unsigned char sprctl1;
     unsigned char sprcoll;
     char *next;
@@ -124,7 +124,7 @@ typedef struct scb_hv_pal4 {
 
 // Sprite control block without tilt and palette
 typedef struct scb_hvs {
-    unsigned char sprctl0;
+    unsigned char sprctl0; // set RELOAD_HVS | REUSE_PALETTE
     unsigned char sprctl1;
     unsigned char sprcoll;
     char *next;
@@ -174,7 +174,7 @@ typedef struct scb_none_pal4 {
     unsigned char penpal[8];
 } scb_none_pal4;
 
-// Miscellaneous Mikey definitions
+// Miscellaneous Suzy definitions
 
 // SPRGO bit definitions
 enum {
@@ -201,7 +201,7 @@ enum {
     VSTRETCHING   = 0x10,
     LEFTHANDED    = 0x08,
     UNSAFEACCESS  = 0x04,  // unsafe access performed
-    SPRITETOSTOP  = 0x02,  // requested to stop 
+    SPRITETOSTOP  = 0x02,  // requested to stop
     SPRITEWORKING = 0x01  // sprite process is active
 };
 
@@ -255,9 +255,9 @@ struct _math_divide {
     unsigned long remainder;      // 0xFC6C - 0xFC6F
 };
 
-// Structure for Suzy register offsets 
+// Structure for Suzy register offsets
 struct __suzy {
-    unsigned char *tmpadr;        // 0xFC00* temporary address 
+    unsigned char *tmpadr;        // 0xFC00* temporary address
     unsigned int  tiltacum;       // 0xFC02* accumulator for tilt value
     unsigned int  hoff;           // 0xFC04  offset to H edge of screen
     unsigned int  voff;           // 0xFC06  offset to V edge of screen
@@ -302,9 +302,9 @@ struct __suzy {
             unsigned char mathk;      // 0xFC6E
             unsigned char mathj;      // 0xFC6F
         };
-        struct _math_unsigned_multiply math_unsigned_multiply;
-        struct _math_signed_multiply math_signed_multiply;
-        struct _math_divide math_divide;
+        struct _math_unsigned_multiply unsigned_multiply;
+        struct _math_signed_multiply signed_multiply;
+        struct _math_divide divide;
     };
     unsigned char unused4[16];        // 0xFC70 - 0xFC7F  do not use
     unsigned char sprctl0;            // 0xFC80  sprite control bits 0
@@ -328,9 +328,8 @@ struct __suzy {
     unsigned char unused9;            // 0xFCC1  unused
     unsigned char iostatus;           // 0xFCC2  parallel IO port status
     unsigned char iodata;             // 0xFCC3  parallel IO port data
-    unsigned char howie;              // 0xFCC4  howie 
+    unsigned char howie;              // 0xFCC4  howie
                                       // 0xFCC5 - 0xFCFF  unused
 };
 
 #endif
-

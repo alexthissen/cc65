@@ -27,7 +27,7 @@
 #ifndef __MIKEY_H
 #define __MIKEY_H
 
-// Timer structure 
+// Timer structure
 typedef struct _mikey_timer {
     unsigned char backup;
     unsigned char controla;
@@ -39,7 +39,7 @@ typedef struct _mikey_all_timers {
     struct _mikey_timer timer[8];
 } _mikey_all_timers;
 
-// Audio channel structure 
+// Audio channel structure
 typedef struct _mikey_audio {
     unsigned char volume;
     unsigned char feedback;
@@ -91,14 +91,8 @@ struct __mikey {
     unsigned char cpusleep;      // 0xFD91  cpu bus request disable
     unsigned char dispctl;       // 0xFD92  video bus request enable, viddma
     unsigned char pbkup;         // 0xFD93  magic 'P' count
-    union {
-      unsigned char* dispadr;    // 0xFD94 - 0xFD95  start address of video display
-      struct {
-        unsigned char dispadrlo; // 0xFD94  display address low byte
-        unsigned char dispadrhi; // 0xFD95  display address high byte
-      };
-    };
-    unsigned char unused4[6];    // 0xFD96 - 0xFD9B not used
+    unsigned char* dispadr;      // 0xFD94 - 0xFD95  start address of video display
+    unsigned char unused4[6];    // 0xFD96 - 0xFD9B  not used
     unsigned char mtest0;        // 0xFD9C
     unsigned char mtest1;        // 0xFD9D
     unsigned char mtest2;        // 0xFD9E
@@ -116,126 +110,155 @@ struct __mikey {
 };
 
 // TIM_CONTROLA control bit definitions
-#define ENABLE_INT       0x80
-#define RESET_DONE       0x40
-#define ENABLE_RELOAD    0x10
-#define ENABLE_COUNT     0x08
+enum {
+    ENABLE_INT       = 0x80,
+    RESET_DONE       = 0x40,
+    ENABLE_RELOAD    = 0x10,
+    ENABLE_COUNT     = 0x08
+};
 
 // AUD_CONTROL control bit definitions
-#define FEEDBACK_7       0x80
-#define ENABLE_INTEGRATE 0x20
+enum {
+    FEEDBACK_7       = 0x80,
+    ENABLE_INTEGRATE = 0x20
+};
 
-// Audio and timer clock settings for source period 
-#define AUD_LINKING      0x07
-#define AUD_64           0x06
-#define AUD_32           0x05
-#define AUD_16           0x04
-#define AUD_8            0x03
-#define AUD_4            0x02
-#define AUD_2            0x01
-#define AUD_1            0x00
+// Audio and timer clock settings for source period
+enum {
+    AUD_LINKING      = 0x07,
+    AUD_64           = 0x06,
+    AUD_32           = 0x05,
+    AUD_16           = 0x04,
+    AUD_8            = 0x03,
+    AUD_4            = 0x02,
+    AUD_2            = 0x01,
+    AUD_1            = 0x00
+};
 
 // TIM_CONTROLB control bit definitions
-#define TIMER_DONE       0x08
-#define LAST_CLOCK       0x04
-#define BORROW_IN        0x02
-#define BORROW_OUT       0x01
+enum {
+    TIMER_DONE       = 0x08,
+    LAST_CLOCK       = 0x04,
+    BORROW_IN        = 0x02,
+    BORROW_OUT       = 0x01
+};
 
 // MPAN and MSTEREO registers bit definitions
-#define LEFT3_SELECT     0x80
-#define LEFT2_SELECT     0x40
-#define LEFT1_SELECT     0x20
-#define LEFT0_SELECT     0x10
-#define RIGHT3_SELECT    0x08
-#define RIGHT2_SELECT    0x04
-#define RIGHT1_SELECT    0x02
-#define RIGHT0_SELECT    0x01
-#define LEFT_ATTENMASK   0xF0
-#define RIGHT_ATTENMASK  0x0F
+enum {
+    LEFT3_SELECT     = 0x80,
+    LEFT2_SELECT     = 0x40,
+    LEFT1_SELECT     = 0x20,
+    LEFT0_SELECT     = 0x10,
+    RIGHT3_SELECT    = 0x08,
+    RIGHT2_SELECT    = 0x04,
+    RIGHT1_SELECT    = 0x02,
+    RIGHT0_SELECT    = 0x01,
+    LEFT_ATTENMASK   = 0xF0,
+    RIGHT_ATTENMASK  = 0x0F
+};
 
 // Interrupt Reset and Set bit definitions
-#define TIMER7_INT       0x80
-#define TIMER6_INT       0x40
-#define TIMER5_INT       0x20
-#define TIMER4_INT       0x10
-#define TIMER3_INT       0x08
-#define TIMER2_INT       0x04
-#define TIMER1_INT       0x02
-#define TIMER0_INT       0x01
-#define SERIAL_INT       TIMER4_INT
-#define VERTICAL_INT     TIMER2_INT
-#define HORIZONTAL_INT   TIMER0_INT
+enum {
+    TIMER7_INT       = 0x80,
+    TIMER6_INT       = 0x40,
+    TIMER5_INT       = 0x20,
+    TIMER4_INT       = 0x10,
+    TIMER3_INT       = 0x08,
+    TIMER2_INT       = 0x04,
+    TIMER1_INT       = 0x02,
+    TIMER0_INT       = 0x01,
+    SERIAL_INT       = TIMER4_INT,
+    VERTICAL_INT     = TIMER2_INT,
+    HORIZONTAL_INT   = TIMER0_INT
+};
 
 // SYSCTL1 bit definitions
-#define POWERON          0x02
-#define CART_ADDR_STROBE 0x01
+enum {
+    POWERON          = 0x02,
+    CART_ADDR_STROBE = 0x01
+};
 
 //  IODIR and IODAT bit definitions
-#define AUDIN_BIT        0x10 // different from AUDIN address
-#define READ_ENABLE      0x10 // same bit for AUDIN_BIT
-#define RESTLESS         0x08
-#define NOEXP            0x04 // if set, redeye is not connected
-#define CART_ADDR_DATA   0x02 //
-#define CART_POWER_OFF   0x02 // same bit for CART_ADDR_DATA
-#define EXTERNAL_POWER   0x01 //
+enum {
+    AUDIN_BIT        = 0x10, // different from AUDIN address
+    READ_ENABLE      = 0x10, // same bit for AUDIN_BIT
+    RESTLESS         = 0x08,
+    NOEXP            = 0x04, // if set, redeye is not connected
+    CART_ADDR_DATA   = 0x02, //
+    CART_POWER_OFF   = 0x02, // same bit for CART_ADDR_DATA
+    EXTERNAL_POWER   = 0x01
+};
 
 // SERCTL bit definitions for write operations
-#define TXINTEN          0x80
-#define RXINTEN          0x40
-#define PAREN            0x01
-#define RESETERR         0x08
-#define TXOPEN           0x04
-#define TXBRK            0x02
-#define PAREVEN          0x01
+enum {
+    TXINTEN          = 0x80,
+    RXINTEN          = 0x40,
+    PAREN            = 0x01,
+    RESETERR         = 0x08,
+    TXOPEN           = 0x04,
+    TXBRK            = 0x02,
+    PAREVEN          = 0x01
+};
 
 // SERCTL bit definitions for read operations
-#define TXRDY            0x80
-#define RXRDY            0x40
-#define TXEMPTY          0x20
-#define PARERR           0x10
-#define OVERRUN          0x08
-#define FRAMERR          0x04
-#define RXBRK            0x02
-#define PARBIT           0x01
+enum {
+    TXRDY            = 0x80,
+    RXRDY            = 0x40,
+    TXEMPTY          = 0x20,
+    PARERR           = 0x10,
+    OVERRUN          = 0x08,
+    FRAMERR          = 0x04,
+    RXBRK            = 0x02,
+    PARBIT           = 0x01
+};
 
 // DISPCTL bit definitions
-#define DISP_COLOR       0x08 // must be set to 1
-#define DISP_FOURBIT     0x04 // must be set to 1
-#define DISP_FLIP        0x02 //
-#define DMA_ENABLE       0x01 // must be set to 1
+enum {
+    DISP_COLOR       = 0x08, // must be set to 1
+    DISP_FOURBIT     = 0x04, // must be set to 1
+    DISP_FLIP        = 0x02, //
+    DMA_ENABLE       = 0x01 // must be set to 1
+};
 
 // MTEST0 bit definitions
-#define AT_CNT16         0x80
-#define AT_TEST          0x40
-#define XCLKEN           0x20
-#define UART_TURBO       0x10
-#define ROM_SEL          0x08
-#define ROM_TEST         0x04
-#define M_TEST           0x02
-#define CPU_TEST         0x01
+enum {
+    AT_CNT16         = 0x80,
+    AT_TEST          = 0x40,
+    XCLKEN           = 0x20,
+    UART_TURBO       = 0x10,
+    ROM_SEL          = 0x08,
+    ROM_TEST         = 0x04,
+    M_TEST           = 0x02,
+    CPU_TEST         = 0x01
+};
 
 // MTEST1 bit definitions
-#define P_CNT16          0x40
-#define REF_CNT16        0x20
-#define VID_TRIG         0x10
-#define REF_TRIG         0x08
-#define VID_DMA_DIS      0x04
-#define REF_FAST         0x02
-#define REF_DIS          0x01
+enum {
+    P_CNT16          = 0x40,
+    REF_CNT16        = 0x20,
+    VID_TRIG         = 0x10,
+    REF_TRIG         = 0x08,
+    VID_DMA_DIS      = 0x04,
+    REF_FAST         = 0x02,
+    REF_DIS          = 0x01
+};
 
 // MTEST2 bit definitions
-#define V_STROBE         0x10
-#define V_ZERO           0x08
-#define H_120            0x04
-#define H_ZERO           0x02
-#define V_BLANKEF        0x01
+enum {
+    V_STROBE         = 0x10,
+    V_ZERO           = 0x08,
+    H_120            = 0x04,
+    H_ZERO           = 0x02,
+    V_BLANKEF        = 0x01
+};
 
 // MAPCTL flag definitions
-#define TURBO_DISABLE    0x80
-#define VECTOR_SPACE     0x08
-#define ROM_SPACE        0x04
-#define MIKEY_SPACE      0x02
-#define SUZY_SPACE       0x01
+enum {
+    TURBO_DISABLE    = 0x80,
+    VECTOR_SPACE     = 0x08,
+    ROM_SPACE        = 0x04,
+    MIKEY_SPACE      = 0x02,
+    SUZY_SPACE       = 0x01
+};
 
 #endif
-
