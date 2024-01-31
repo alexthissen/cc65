@@ -40,11 +40,11 @@ enum {
     VFLIP              = 0x10,
     SHADOW_SPRITE      = 0x07,
     XOR_SPRITE         = 0x06,
-    NONCOLL_SPRITE     = 0x05,
+    NONCOLL_SPRITE     = 0x05, // non-colliding
     NORMAL_SPRITE      = 0x04,
     BOUNDARY_SPRITE    = 0x03,
-    BSHADOW_SPRITE     = 0x02,
-    BACKNONCOLL_SPRITE = 0x01,
+    BSHADOW_SPRITE     = 0x02, // background shadow
+    BACKNONCOLL_SPRITE = 0x01, // background non-colliding
     BACKGROUND_SPRITE  = 0x00
 };
 

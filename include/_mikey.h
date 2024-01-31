@@ -111,10 +111,10 @@ struct __mikey {
 
 // TIM_CONTROLA control bit definitions
 enum {
-    ENABLE_INT       = 0x80,
-    RESET_DONE       = 0x40,
-    ENABLE_RELOAD    = 0x10,
-    ENABLE_COUNT     = 0x08
+    ENABLE_INT    = 0x80,
+    RESET_DONE    = 0x40,
+    ENABLE_RELOAD = 0x10,
+    ENABLE_COUNT  = 0x08
 };
 
 // AUD_CONTROL control bit definitions
@@ -125,51 +125,51 @@ enum {
 
 // Audio and timer clock settings for source period
 enum {
-    AUD_LINKING      = 0x07,
-    AUD_64           = 0x06,
-    AUD_32           = 0x05,
-    AUD_16           = 0x04,
-    AUD_8            = 0x03,
-    AUD_4            = 0x02,
-    AUD_2            = 0x01,
-    AUD_1            = 0x00
+    AUD_LINKING = 0x07,
+    AUD_64      = 0x06,
+    AUD_32      = 0x05,
+    AUD_16      = 0x04,
+    AUD_8       = 0x03,
+    AUD_4       = 0x02,
+    AUD_2       = 0x01,
+    AUD_1       = 0x00
 };
 
 // TIM_CONTROLB control bit definitions
 enum {
-    TIMER_DONE       = 0x08,
-    LAST_CLOCK       = 0x04,
-    BORROW_IN        = 0x02,
-    BORROW_OUT       = 0x01
+    TIMER_DONE = 0x08,
+    LAST_CLOCK = 0x04,
+    BORROW_IN  = 0x02,
+    BORROW_OUT = 0x01
 };
 
 // MPAN and MSTEREO registers bit definitions
 enum {
-    LEFT3_SELECT     = 0x80,
-    LEFT2_SELECT     = 0x40,
-    LEFT1_SELECT     = 0x20,
-    LEFT0_SELECT     = 0x10,
-    RIGHT3_SELECT    = 0x08,
-    RIGHT2_SELECT    = 0x04,
-    RIGHT1_SELECT    = 0x02,
-    RIGHT0_SELECT    = 0x01,
-    LEFT_ATTENMASK   = 0xF0,
-    RIGHT_ATTENMASK  = 0x0F
+    LEFT3_SELECT    = 0x80,
+    LEFT2_SELECT    = 0x40,
+    LEFT1_SELECT    = 0x20,
+    LEFT0_SELECT    = 0x10,
+    RIGHT3_SELECT   = 0x08,
+    RIGHT2_SELECT   = 0x04,
+    RIGHT1_SELECT   = 0x02,
+    RIGHT0_SELECT   = 0x01,
+    LEFT_ATTENMASK  = 0xF0,
+    RIGHT_ATTENMASK = 0x0F
 };
 
 // Interrupt Reset and Set bit definitions
 enum {
-    TIMER7_INT       = 0x80,
-    TIMER6_INT       = 0x40,
-    TIMER5_INT       = 0x20,
-    TIMER4_INT       = 0x10,
-    TIMER3_INT       = 0x08,
-    TIMER2_INT       = 0x04,
-    TIMER1_INT       = 0x02,
-    TIMER0_INT       = 0x01,
-    SERIAL_INT       = TIMER4_INT,
-    VERTICAL_INT     = TIMER2_INT,
-    HORIZONTAL_INT   = TIMER0_INT
+    TIMER7_INT     = 0x80,
+    TIMER6_INT     = 0x40,
+    TIMER5_INT     = 0x20,
+    TIMER4_INT     = 0x10,
+    TIMER3_INT     = 0x08,
+    TIMER2_INT     = 0x04,
+    TIMER1_INT     = 0x02,
+    TIMER0_INT     = 0x01,
+    SERIAL_INT     = TIMER4_INT,
+    VERTICAL_INT   = TIMER2_INT,
+    HORIZONTAL_INT = TIMER0_INT
 };
 
 // SYSCTL1 bit definitions
@@ -180,85 +180,85 @@ enum {
 
 //  IODIR and IODAT bit definitions
 enum {
-    AUDIN_BIT        = 0x10, // different from AUDIN address
-    READ_ENABLE      = 0x10, // same bit for AUDIN_BIT
-    RESTLESS         = 0x08,
-    NOEXP            = 0x04, // if set, redeye is not connected
-    CART_ADDR_DATA   = 0x02, //
-    CART_POWER_OFF   = 0x02, // same bit for CART_ADDR_DATA
-    EXTERNAL_POWER   = 0x01
+    AUDIN_BIT      = 0x10, // different from AUDIN address
+    READ_ENABLE    = 0x10, // same bit for AUDIN_BIT
+    RESTLESS       = 0x08,
+    NOEXP          = 0x04, // if set, redeye is not connected
+    CART_ADDR_DATA = 0x02, //
+    CART_POWER_OFF = 0x02, // same bit for CART_ADDR_DATA
+    EXTERNAL_POWER = 0x01
 };
 
 // SERCTL bit definitions for write operations
 enum {
-    TXINTEN          = 0x80,
-    RXINTEN          = 0x40,
-    PAREN            = 0x01,
-    RESETERR         = 0x08,
-    TXOPEN           = 0x04,
-    TXBRK            = 0x02,
-    PAREVEN          = 0x01
+    TXINTEN  = 0x80,
+    RXINTEN  = 0x40,
+    PAREN    = 0x01,
+    RESETERR = 0x08,
+    TXOPEN   = 0x04,
+    TXBRK    = 0x02,
+    PAREVEN  = 0x01
 };
 
 // SERCTL bit definitions for read operations
 enum {
-    TXRDY            = 0x80,
-    RXRDY            = 0x40,
-    TXEMPTY          = 0x20,
-    PARERR           = 0x10,
-    OVERRUN          = 0x08,
-    FRAMERR          = 0x04,
-    RXBRK            = 0x02,
-    PARBIT           = 0x01
+    TXRDY   = 0x80,
+    RXRDY   = 0x40,
+    TXEMPTY = 0x20,
+    PARERR  = 0x10,
+    OVERRUN = 0x08,
+    FRAMERR = 0x04,
+    RXBRK   = 0x02,
+    PARBIT  = 0x01
 };
 
 // DISPCTL bit definitions
 enum {
-    DISP_COLOR       = 0x08, // must be set to 1
-    DISP_FOURBIT     = 0x04, // must be set to 1
-    DISP_FLIP        = 0x02, //
-    DMA_ENABLE       = 0x01 // must be set to 1
+    DISP_COLOR   = 0x08, // must be set to 1
+    DISP_FOURBIT = 0x04, // must be set to 1
+    DISP_FLIP    = 0x02,
+    DMA_ENABLE   = 0x01  // must be set to 1
 };
 
 // MTEST0 bit definitions
 enum {
-    AT_CNT16         = 0x80,
-    AT_TEST          = 0x40,
-    XCLKEN           = 0x20,
-    UART_TURBO       = 0x10,
-    ROM_SEL          = 0x08,
-    ROM_TEST         = 0x04,
-    M_TEST           = 0x02,
-    CPU_TEST         = 0x01
+    AT_CNT16   = 0x80,
+    AT_TEST    = 0x40,
+    XCLKEN     = 0x20,
+    UART_TURBO = 0x10,
+    ROM_SEL    = 0x08,
+    ROM_TEST   = 0x04,
+    M_TEST     = 0x02,
+    CPU_TEST   = 0x01
 };
 
 // MTEST1 bit definitions
 enum {
-    P_CNT16          = 0x40,
-    REF_CNT16        = 0x20,
-    VID_TRIG         = 0x10,
-    REF_TRIG         = 0x08,
-    VID_DMA_DIS      = 0x04,
-    REF_FAST         = 0x02,
-    REF_DIS          = 0x01
+    P_CNT16     = 0x40,
+    REF_CNT16   = 0x20,
+    VID_TRIG    = 0x10,
+    REF_TRIG    = 0x08,
+    VID_DMA_DIS = 0x04,
+    REF_FAST    = 0x02,
+    REF_DIS     = 0x01
 };
 
 // MTEST2 bit definitions
 enum {
-    V_STROBE         = 0x10,
-    V_ZERO           = 0x08,
-    H_120            = 0x04,
-    H_ZERO           = 0x02,
-    V_BLANKEF        = 0x01
+    V_STROBE  = 0x10,
+    V_ZERO    = 0x08,
+    H_120     = 0x04,
+    H_ZERO    = 0x02,
+    V_BLANKEF = 0x01
 };
 
 // MAPCTL flag definitions
 enum {
-    TURBO_DISABLE    = 0x80,
-    VECTOR_SPACE     = 0x08,
-    ROM_SPACE        = 0x04,
-    MIKEY_SPACE      = 0x02,
-    SUZY_SPACE       = 0x01
+    TURBO_DISABLE = 0x80,
+    VECTOR_SPACE  = 0x08,
+    ROM_SPACE     = 0x04,
+    MIKEY_SPACE   = 0x02,
+    SUZY_SPACE    = 0x01
 };
 
 #endif
