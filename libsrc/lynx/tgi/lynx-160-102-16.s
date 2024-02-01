@@ -13,7 +13,7 @@
         .include        "tgi-kernel.inc"
         .include        "tgi-error.inc"
 
-        .include        "lynx.inc"
+        .include        "lynx2.inc"
 
         .macpack        generic
         .macpack        module
@@ -214,8 +214,8 @@ UNINSTALL:
 
 INIT:
 ; Enable interrupts for VBL
-        lda     #$80
-        tsb     VTIMCTLA
+        lda     #ENABLE_INT
+        tsb     VCOUNT+TIM_CONTROLA
 ; Set up collision buffer to $A058
         lda     #$58
         sta     COLLBASL
@@ -335,7 +335,7 @@ rate60: lda     #$9e            ; 60 Hz
 rate75: lda     #$7e            ; 75 Hz
         ldx     #$20
 setRate:
-        sta     HTIMBKUP
+        sta     HCOUNT+TIM_BACKUP
         stx     PBKUP
         rts
 
@@ -352,16 +352,16 @@ ControlFlipScreen:
         bne     ControlDrawSprite
 
         lda     __sprsys        ; Flip screen
-        eor     #8
+        eor     #LEFTHAND
         sta     __sprsys
         sta     SPRSYS
         lda     __viddma
-        eor     #2
+        eor     #DISP_FLIP
         sta     __viddma
         sta     DISPCTL
         ldy     VIEWPAGEL
         ldx     VIEWPAGEH
-        and     #2
+        and     #DISP_FLIP
         beq     NotFlipped
         clc
         tya
@@ -386,7 +386,7 @@ draw_sprite:                    ; Draw it in render buffer
         ldx     DRAWPAGEH
         sta     VIDBASL
         stx     VIDBASH
-        lda     #1
+        lda     #SPRITE_GO
         sta     SPRGO
         stz     SDONEACK
 @L0:    stz     CPUSLEEP
@@ -411,9 +411,9 @@ pixel_bitmap:
 cls_coll:
         .byte   0
 cls_sprite:
-        .byte   %00000001                       ; A pixel sprite
-        .byte   %00010000
-        .byte   %00100000
+        .byte   BACKNONCOLL_SPRITE               ; A pixel sprite
+        .byte   RELOAD_HV
+        .byte   NO_COLLIDE
         .addr   0,pixel_bitmap
         .word   0
         .word   0
@@ -451,7 +451,7 @@ SETVIEWPAGE:
         stx     VIEWPAGEH
 
         lda     __viddma        ; Process flipped displays
-        and     #2
+        and     #DISP_FLIP
         beq     @L3
         clc
         tya
@@ -488,7 +488,7 @@ SETDRAWPAGE:
 
 irq:
         lda     INTSET          ; Poll all pending interrupts
-        and     #VBL_INTERRUPT
+        and     #VERTICAL_INT
         beq     @L0             ; Exit if not a VBL interrupt
 
         lda     SWAPREQUEST
@@ -575,9 +575,9 @@ GETDEFPALETTE:
 pixel_coll:
         .byte   0
 pixel_sprite:
-        .byte   %00000001                       ; A pixel sprite
-        .byte   %00010000
-        .byte   %00100000
+        .byte   BACKNONCOLL_SPRITE                       ; A pixel sprite
+        .byte   RELOAD_HV
+        .byte   NO_COLLIDE
         .addr   0,pixel_bitmap
 pix_x:  .word   0
 pix_y:  .word   0
@@ -624,11 +624,11 @@ GETPIXEL:
         sta     ptr1+1
 
         ldx     #0
-        lda     #15
+        lda     #VECTOR_SPACE+ROM_SPACE+MIKEY_SPACE+SUZY_SPACE
         sta     MAPCTL
         lda     (ptr1),y
         tay
-        lda     #$0c
+        lda     #VECTOR_SPACE+ROM_SPACE
         sta     MAPCTL
         tya
         plp

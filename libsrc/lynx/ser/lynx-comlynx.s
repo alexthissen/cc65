@@ -4,7 +4,7 @@
 ; Karri Kaksonen, 17.09.2009
 ;
 
-        .include        "lynx.inc"
+        .include        "lynx2.inc"
         .include        "zeropage.inc"
         .include        "ser-kernel.inc"
         .include        "ser-error.inc"
@@ -109,8 +109,8 @@ SER_OPEN:
         stz     TxPtrOut
 
         ; clock = 8 * 15625
-        lda     #%00011000
-        sta     TIM4CTLA
+        lda     #ENABLE_RELOAD|ENABLE_COUNT
+        sta     TIMER4+TIM_CONTROLA
         ldy     #SER_PARAMS::BAUDRATE
         lda     (ptr1),y
 
@@ -143,8 +143,8 @@ SER_OPEN:
         beq     setbaudrate
 
         ; clock = 6 * 15625
-        ldx     #%00011010
-        stx     TIM4CTLA
+        ldx     #ENABLE_RELOAD|ENABLE_COUNT|AUD_4
+        stx     SERIALRATE+TIM_CONTROLA
 
         ldx     #12
         cmp     #SER_BAUD_7200
@@ -155,21 +155,21 @@ SER_OPEN:
         beq     setbaudrate
 
         ldx     #207
-        stx     TIM4BKUP
+        stx     SERIALRATE+TIM_BACKUP
 
         ; clock = 4 * 15625
-        ldx     #%00011100
+        ldx     #ENABLE_RELOAD|ENABLE_COUNT|AUD_16
         cmp     #SER_BAUD_300
         beq     setprescaler
 
         ; clock = 6 * 15625
-        ldx     #%00011110
+        ldx     #ENABLE_RELOAD|ENABLE_COUNT|AUD_64
         cmp     #SER_BAUD_150
         beq     setprescaler
 
         ; clock = 1 * 15625
-        ldx     #%00011111
-        stx     TIM4CTLA
+        ldx     #ENABLE_RELOAD|ENABLE_COUNT|AUD_LINKING
+        stx     SERIALRATE+TIM_CONTROLA
         cmp     #SER_BAUD_75
         beq     baudsuccess
 
@@ -178,15 +178,15 @@ SER_OPEN:
         beq     setbaudrate
 
         ; clock = 2 * 15625
-        ldx     #%00011010
-        stx     TIM4CTLA
+        ldx     #ENABLE_RELOAD+ENABLE_COUNT+AUD_4
+        stx     SERIALRATE+TIM_CONTROLA
         ldx     #68
         cmp     #SER_BAUD_1800
         beq     setbaudrate
 
         ; clock = 6 * 15625
         ldx     #%00011110
-        stx     TIM4CTLA
+        stx     SERIALRATE+TIM_CONTROLA
         ldx     #231
         cmp     #SER_BAUD_134_5
         beq     setbaudrate
@@ -195,12 +195,12 @@ SER_OPEN:
         ldx     #0 ; return value is char
         rts
 setprescaler:
-        stx     TIM4CTLA
+        stx     SERIALRATE+TIM_CONTROLA
         bra     baudsuccess
 setbaudrate:
-        stx     TIM4BKUP
+        stx     SERIALRATE+TIM_BACKUP
 baudsuccess:
-        ldx     #TxOpenColl|ParEven
+        ldx     #TXOPEN|PAREVEN
         stx     contrl
         ldy     #SER_PARAMS::DATABITS   ; Databits
         lda     (ptr1),y
@@ -218,15 +218,15 @@ baudsuccess:
         beq     checkhs
         cmp     #SER_PAR_SPACE
         bne     @L0
-        ldx     #TxOpenColl
+        ldx     #TXOPEN
         stx     contrl
         bra     checkhs
 @L0:
-        ldx     #TxParEnable|TxOpenColl|ParEven
+        ldx     #PAREN|TXOPEN|PAREVEN
         stx     contrl
         cmp     #SER_PAR_EVEN
         beq     checkhs
-        ldx     #TxParEnable|TxOpenColl
+        ldx     #PAREN|TXOPEN
         stx     contrl
 checkhs:
         ldx     contrl
@@ -237,7 +237,7 @@ checkhs:
         bne     invparameter
         lda     SERDAT
         lda     contrl
-        ora     #RxIntEnable|ResetErr
+        ora     #RXINTEN|RESETERR
         sta     SERCTL
         lda     #SER_ERR_OK
         .assert SER_ERR_OK = 0, error
@@ -293,7 +293,7 @@ PutByte:
         php
         sei
         lda     contrl
-        ora     #TxIntEnable|ResetErr
+        ora     #TXINTEN|RESETERR
         sta     SERCTL       ; Allow TX-IRQ to hang RX-IRQ
         sta     TxDone
         plp
@@ -335,7 +335,7 @@ SER_IOCTL:
 
 SER_IRQ:
         lda     INTSET          ; Poll all pending interrupts
-        and     #SERIAL_INTERRUPT
+        and     #SERIAL_INT
         bne     @L0
         clc
         rts
@@ -344,10 +344,10 @@ SER_IRQ:
         bmi     @tx_irq     ; Transmit in progress
         ldx     SERDAT
         lda     SERCTL
-        and     #RxParityErr|RxOverrun|RxFrameErr|RxBreak
+        and     #PARERR|OVERRUN|FRAMERR|RXBRK
         beq     @rx_irq
         tsb     SerialStat  ; Save error condition
-        bit     #RxBreak
+        bit     #RXBRK
         beq     @noBreak
         stz     TxPtrIn     ; Break received - drop buffers
         stz     TxPtrOut
@@ -355,14 +355,14 @@ SER_IRQ:
         stz     RxPtrOut
 @noBreak:
         lda     contrl
-        ora     #RxIntEnable|ResetErr
+        ora     #RXINTEN|RESETERR
         sta     SERCTL
-        lda     #$10
+        lda     #SERIAL_INT
         sta     INTRST
         bra     @IRQexit
 @rx_irq:
         lda     contrl
-        ora     #RxIntEnable|ResetErr
+        ora     #RXINTEN|RESETERR
         sta     SERCTL
         txa
         ldx     RxPtrIn
@@ -374,7 +374,7 @@ SER_IRQ:
         cpx     RxPtrOut
         beq     @1
         stx     RxPtrIn
-        lda     #SERIAL_INTERRUPT
+        lda     #SERIAL_INT
         sta     INTRST
         bra     @IRQexit
 
@@ -393,23 +393,23 @@ SER_IRQ:
 
 @exit1:
         lda     contrl
-        ora     #TxIntEnable|ResetErr
+        ora     #TXINTEN|RESETERR
         sta     SERCTL
-        lda     #SERIAL_INTERRUPT
+        lda     #SERIAL_INT
         sta     INTRST
         bra     @IRQexit
 
 @allSent:
         lda     SERCTL       ; All bytes sent
-        bit     #TxEmpty
+        bit     #TXEMPTY
         beq     @exit1
         bvs     @exit1
         stz     TxDone
         lda     contrl
-        ora     #RxIntEnable|ResetErr
+        ora     #RXINTEN|RESETERR
         sta     SERCTL
 
-        lda     #SERIAL_INTERRUPT
+        lda     #SERIAL_INT
         sta     INTRST
 @IRQexit:
         clc

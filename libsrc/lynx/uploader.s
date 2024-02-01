@@ -1,4 +1,4 @@
-        .include        "lynx.inc"
+        .include        "lynx2.inc"
         .include        "extzp.inc"
         .interruptor    _UpLoaderIRQ
         .export         __UPLOADER__: absolute = 1
@@ -47,7 +47,7 @@ read_byte:
 
 _UpLoaderIRQ:
         lda     INTSET
-        and     #$10
+        and     #SERIAL_INT
         bne     @L0
         clc
         rts
@@ -69,7 +69,7 @@ again:
 ; last action : clear interrupt
 ;
 exit:
-        lda     #$10
+        lda     #SERIAL_INT
         sta     INTRST
         clc
         rts

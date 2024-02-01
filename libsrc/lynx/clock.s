@@ -14,7 +14,7 @@
         .constructor    init_clock
 
         .import         sreg: zp
-        .include        "lynx.inc"
+        .include        "lynx2.inc"
 
         .macpack        generic
 
@@ -59,7 +59,7 @@ ___clocks_per_sec:
         .segment        "LOWCODE"
 update_clock:
         lda     INTSET
-        and     #%00000100
+        and     #VERTICAL_INT
         beq     @NotVBlank      ; Not vertical-blank interrupt
 
         inc     clock_count
@@ -76,8 +76,8 @@ update_clock:
 ;
         .segment        "ONCE"
 init_clock:
-        lda     #%10000000
-        tsb     VTIMCTLA
+        lda     #ENABLE_INT
+        tsb     VCOUNT+TIM_CONTROLA
         rts
 
 ;-----------------------------------------------------------------------------

@@ -4,7 +4,7 @@
 ; Karri Kaksonen and Bjoern Spruck, 11.12.2012
 ;
 
-        .include        "lynx.inc"
+        .include        "lynx2.inc"
         .include        "zeropage.inc"
 
         .export         _lynx_snd_init
@@ -164,24 +164,24 @@ _lynx_snd_init:
         php
         sei
         lda     #%10011000|_31250Hz
-        sta     STIMCTLA
+        sta     TIMER7+TIM_CONTROLA
         lda     #129
-        sta     STIMBKUP        ; set up a 240Hz IRQ
+        sta     TIMER7+TIM_BACKUP        ; set up a 240Hz IRQ
 
-        stz     AUD0VOL
-        stz     AUD1VOL
-        stz     AUD2VOL
-        stz     AUD3VOL
+        stz     AUDIO0+AUD_VOLCNTRL
+        stz     AUDIO1+AUD_VOLCNTRL
+        stz     AUDIO2+AUD_VOLCNTRL
+        stz     AUDIO3+AUD_VOLCNTRL
 
         stz     $fd44           ; all channels full volume / no attenuation
         lda     #$ff
         stz     MSTEREO
 
         lda     #0
-        sta     AUD0CTLA
-        sta     AUD1CTLA
-        sta     AUD2CTLA
-        sta     AUD3CTLA
+        sta     AUDIO0+AUD_CONTROL
+        sta     AUDIO1+AUD_CONTROL
+        sta     AUDIO2+AUD_CONTROL
+        sta     AUDIO3+AUD_CONTROL
 
         ldx     #3
         lda     #0
@@ -206,7 +206,7 @@ init0:  stz     SndActive,x
 
 lynx_snd_handler:
         lda     INTSET
-        and     #SND_INTERRUPT
+        and     #TIMER7_INT
         bne     @L0
         clc
         rts
@@ -655,10 +655,10 @@ SndDummy:        rts
 ;;;* This set the new Player Freq instantanious!!!
 SndPlayerFreq:
                 lda (SndPtrTmp),y
-                sta STIMCTLA
+                sta TIMER7+TIM_CONTROLA
                 iny
                 lda (SndPtrTmp),y
-                sta STIMBKUP
+                sta TIMER7+TIM_BACKUP
                 ldy #$83
                 rts
 
@@ -1207,18 +1207,18 @@ act0:   ldy SndActive,x
 _lynx_snd_pause:
         php
         sei
-        lda STIMCTLA
+        lda TIMER7+TIM_CONTROLA
         sta SndPauseOff1+1
-        stz STIMCTLA
+        stz TIMER7+TIM_CONTROLA
         lda MSTEREO
         sta SndPauseOff2+1
         lda #$ff
         sta MSTEREO
         lda #$18
-        trb AUD0CTLA
-        trb AUD1CTLA
-        trb AUD2CTLA
-        trb AUD3CTLA
+        trb AUDIO0+AUD_CONTROL
+        trb AUDIO1+AUD_CONTROL
+        trb AUDIO2+AUD_CONTROL
+        trb AUDIO3+AUD_CONTROL
         plp
         rts
 
@@ -1227,16 +1227,16 @@ _lynx_snd_continue:
         sei
 SndPauseOff1:
         lda #0 ; Selbsmodifizierter Code!!!
-        sta STIMCTLA
+        sta TIMER7+TIM_CONTROLA
 SndPauseOff2:
         lda #0 ; Selbsmodifizierter Code!!!
         sta MSTEREO
 
         lda #$18
-        tsb AUD0CTLA
-        tsb AUD1CTLA
-        tsb AUD2CTLA
-        tsb AUD3CTLA
+        tsb AUDIO0+AUD_CONTROL
+        tsb AUDIO1+AUD_CONTROL
+        tsb AUDIO2+AUD_CONTROL
+        tsb AUDIO3+AUD_CONTROL
 
         plp
         rts

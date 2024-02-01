@@ -48,7 +48,7 @@
         .import         popa
         .importzp       ptr1
 
-        .include        "lynx.inc"
+        .include        "lynx2.inc"
 
 
 ; ------------------------------------------------------------------------

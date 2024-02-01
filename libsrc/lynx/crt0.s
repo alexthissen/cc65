@@ -26,7 +26,7 @@
 
         .include        "zeropage.inc"
         .include        "extzp.inc"
-        .include        "lynx.inc"
+        .include        "lynx2.inc"
 
 ; ------------------------------------------------------------------------
 ; Mikey and Suzy init data, reg offsets and data
@@ -57,18 +57,18 @@ MikeyInitData:  .byte $9e,$18,$68,$1f,$00,$00,$00,$00,$00,$ff,$1a,$1b,$04,$0d,$2
 
 ; Disable all timer interrupts.
 
-        lda     #$80
-        trb     TIM0CTLA
-        trb     TIM1CTLA
-        trb     TIM2CTLA
-        trb     TIM3CTLA
-        trb     TIM5CTLA
-        trb     TIM6CTLA
-        trb     TIM7CTLA
+        lda     #ENABLE_INT
+        trb     TIMER0+TIM_CONTROLA
+        trb     TIMER1+TIM_CONTROLA
+        trb     TIMER2+TIM_CONTROLA
+        trb     TIMER3+TIM_CONTROLA
+        trb     TIMER5+TIM_CONTROLA
+        trb     TIMER6+TIM_CONTROLA
+        trb     TIMER7+TIM_CONTROLA
 
 ; Disable the TX/RX IRQ; set to 8E1.
 
-        lda     #%00011101
+        lda     #PAREN+RESETERR+TXOPEN+PAREVEN
         sta     SERCTL
 
 ; Clear all pending interrupts.
@@ -106,11 +106,11 @@ mloop:  ldy     MikeyInitReg,x
         ldx     #.sizeof(SuzyInitReg)-1
 sloop:  ldy     SuzyInitReg,x
         lda     SuzyInitData,x
-        sta     $fc00,y
+        sta     SUZY_BASE,y
         dex
         bpl     sloop
 
-        lda     #$24
+        lda     #NO_COLLIDE+UNSAFEACCESSRST
         sta     __sprsys
         cli
 
